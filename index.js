@@ -27,7 +27,7 @@ module.exports.each = each;
 /**
  * identity: Designed to return any value passed in as an argument.
  * 
- * @param {value} any datatype: The value to be returned
+ * @param {value} value: The value to be returned
  * 
  * @return {value}: return the value of the passed in argument 
  */
@@ -41,7 +41,7 @@ module.exports.identity = identity;
  * typeOf: Designed to return a string describing the specific typeof data type
  * that is being passed in as an argument
  * 
- * @param {value} any datatype: The value to be checked to see which type of data type
+ * @param {value} value: The value to be checked to see which type of data type
  * is being passed in.
  * 
  * @return {string}: a string indicating the typeof data type that is being passed
@@ -73,9 +73,12 @@ module.exports.typeOf = typeOf;
  * first: Designed to return the first element or first specified number of elements
  * inside of an array.
  * 
- * @param {Array}: This parameter is used to indicate the array in which to access.
- * @param {value} Number: a number to indicate the specified amount of elements to be 
- * returned.
+ * @param {Array} array: This parameter is used to indicate the array in which to access.
+ * If the passed in array isn't an array, an empty array will be returned. 
+ * @param {Number} number: a number to indicate the specified amount of elements to be 
+ * returned. If Number is not given or not a number, return the first element in the Array.
+ * If Number is greater than the length of the array param then the entire array will be 
+ * returned. If number is a negative number, then an empty array will be returned. 
  * 
  * @return {Array}: An array with the specified number of elements removed from the
  * passed in array param.
@@ -99,9 +102,12 @@ module.exports.typeOf = typeOf;
   * last: Designed to return the last element or last specified number of elements
   * inside of an array.
   * 
-  * @param {Array}: This parameter is used to indicate the array in which to access.
-  * @param {value} Number: a number to indicate the specified amount of elements to be 
-  * returned.
+  * @param {Array} array: This parameter is used to indicate the array in which to access.
+  *  If the passed in array isn't an array, an empty array will be returned. 
+  * @param {Number} number: a number to indicate the specified amount of elements to be 
+  * returned. If Number is not given or not a number, return the last element in the Array.
+ * If Number is greater than the length of the array param then the entire array will be 
+ * returned. If number is a negative number, then an empty array will be returned. 
   * 
   * @return {Array}: An array with the specified number of elements removed from the
   * passed in array param.
@@ -126,8 +132,8 @@ if(!Array.isArray(array) || number < 0){
   * indexOf: Designed to iterate over an Array, and return the index of the first 
   * occurrence of a specifed value. If no occurrence is found, -1 will be returned.
   * 
-  * @param {Array}: An array to be iterated over to access each element.
-  * @param {value} any datatype: a value to be searched for inside of the passed
+  * @param {Array} array: An array to be iterated over to access each element.
+  * @param {value} value: a value to be searched for inside of the passed
   * in array argument.
   * 
   * @return {number}: A number indicating the index at which the value argument
@@ -148,8 +154,8 @@ if(!Array.isArray(array) || number < 0){
    * contains: Designed to iterate over an Array, and check if a specified value
    * is located inside that Array or not.
    * 
-   * @param {Array}: An array to be iterated over to access each element.
-   * @param {value} any datatype: a value to be searched for inside of the passed
+   * @param {Array} array: An array to be iterated over to access each element.
+   * @param {value} value: a value to be searched for inside of the passed
    * in array argument.
    * 
    * @return {Boolean}: a boolean value stating true if value is found inside of the
@@ -165,7 +171,7 @@ if(!Array.isArray(array) || number < 0){
     * unique: Designed to iterate over an Array and remove any duplicate elements
     * from the passed in Array argument, into a new array.
     * 
-    * @param {Array}: An array to be iterated over to access each element.
+    * @param {Array} array: An array to be iterated over to access each element.
     * 
     * @return {Array}: A duplicate free array.
     */
@@ -183,24 +189,24 @@ if(!Array.isArray(array) || number < 0){
     
      /**
       * filter: Designed to filter values in a collection based on a test. 
-      * Takes a collection, Array or Object, and passes each value 
+      * Takes a collection, Array or Object, and passes each element, index, and collection 
       * in the collection through a test Function. The test Function returns 
       * true if the value passes the test, false otherwise. Values that pass 
       * the test are collected and returned in an output Array.
       * 
-      * @param {Array or Object} collection: The collection to filter.
-      * @param {Function} test: The Function to be applied to each value in 
-      * the collection. The test Function must return a Boolean based on some 
+      * @param {Array} array: The collection to filter.
+      * @param {Function} test: The Function to be applied to each element, index,
+      * and collection in the collection. The test Function must return a Boolean based on some 
       * logic which tests the value given to it.
       * 
       * @return {Array}: An Array containing the filtered collection values. 
       * The Array will contain only the values that passed the test.
       */
-      function filter(array, func){
+      function filter(array, test){
     let result = [];
-   each(array, (e, i, a) =>{
-       if(func(e, i, a)){
-           result.push(e);
+   each(array, (element, index, array) =>{
+       if(test(element, index, array)){
+           result.push(element);
        }
    });
    return result;
@@ -211,22 +217,22 @@ module.exports.filter = filter;
 /**
  * reject: Opposite of filter, reject is designed to iterate over a collection and
  * filter values in that collection based on a test. Takes a collection, Array or 
- * Object, and passes each value in the collection through a test Function. The test
+ * Object, and passes each element, index and collection in the collection through a test Function. The test
  * Function returns true if the value passes the test, false if otherwise. Values that
  * fail the test are pushed into a new array.
  * 
- * @param {Array or Object} collection: The collection to iterate over.
- * @param {Function} test: The function to be tested at each iteration to determine
- * if the value is truthy or falsy.
+ * @param {Array} array: The collection to iterate over.
+ * @param {Function} test: The function to be tested at each element, index, and collection at 
+ * each iteration to determine if the value is truthy or falsy.
  * 
  * @return {Array}: An array containing only the values that failed the test function.
  */
  function reject(array, test){
-     return  filter(array, (e, i, a) => {
+     return  filter(array, (element, index, array) => {
          //set up conditional statement to test if at each iteration, if the passed in param evaluates to false on the element, index, and array
-        if(!test(e, i, a)){
+        if(!test(element, index, array)){
             //if conditional evaluates to false, push the element into result array
-           return e;
+           return element;
         }
      });
  }
@@ -239,7 +245,7 @@ module.exports.filter = filter;
   * nested arrays contain values that either pass an input test function, or does not
   * pass an input test function respectivly.
   * 
-  * @param {Array or Object} collection: The collection to iterate over.
+  * @param {Array} array: The collection to iterate over.
   * @param {Function} test: The function to be tested at each iteration to determine
   * if the value is truthy or fasly.
   * 
@@ -294,7 +300,7 @@ module.exports.filter = filter;
     function pluck(collection, property){
         return map(collection, (e, i, a) => e[property]);
     }
-    module.exports.map = map;
+    module.exports.pluck = pluck;
     
     
     /**
@@ -304,9 +310,11 @@ module.exports.filter = filter;
      * that value is truthy. At any point of the iteration if any value is falsy the 
      * iteration will be stopped.
      * 
-     * @param {Array} collection: The collection to iterate over.
+     * @param {Array or Object} collection: The collection to iterate over.
      * @param {Function} test: The function to be called at each iteration to check
-     * if the value is truthy or fasly.
+     * if the value is truthy or fasly. If no test function is given, the every function
+     * will still iterate over the collection to check to see if at each iteration that
+     * element's value is truthy or falsy.
      * 
      * @return {Boolean}: If every value passes the test function at each iteration
      * a boolean value of true will be returned, if at least value does not pass
@@ -343,9 +351,11 @@ module.exports.filter = filter;
      * some: Designed to iterate over a collection and call a test function to every
      * element to check if the values are truthy or falsy. 
      * 
-     * @param {Array} collection: The collection to iterate over.
+     * @param {Array or Object} collection: The collection to iterate over.
      * @param {Function} test: The function to be called at each iteration to check
-     * if the value is truthy or fasly.
+     * if the value is truthy or fasly. If no test function is given, some will
+     * still iterate over the array to check if at each iteration that element's
+     * value is truthy or fasly. 
      * 
      * @return {Boolean}: If every element fails the test function at each iteration
      * a boolean value of false will be returned, if at least one element passes
@@ -383,21 +393,21 @@ module.exports.filter = filter;
       * accumulated value is. At each iteration the callback function will be ran on
       * each element. 
       * 
-      * @param {Array or Object} collection: A collection to iterate over.
+      * @param {Array} array: A collection to iterate over.
       * @param {Function} action: A function to run on each iteration over the collection
       * to each element. 
-      * @param {accumulator} seed: An initial value to start accumulating each value 
+      * @param {Value} seed: An initial value to start accumulating each value 
       * in the collection. If no seed is given, the first index of the collection will
       * take the place of the seed (inital starting value).
       * 
-      * @return {accumulator} seed: returns the value of seed at the end of the iteration.
+      * @return {Value} seed: returns the value of seed at the end of the iteration.
       */
-      function reduce(collection, action, seed){
-          for(let i = 0; i < collection.length; i++){
+      function reduce(array, action, seed){
+          for(let i = 0; i < array.length; i++){
         if(seed === undefined){
-            seed = collection[0];
+            seed = array[0];
         } else {
-            seed = action(seed, collection[i], i);
+            seed = action(seed, array[i], i);
         }
     }
     return seed;
